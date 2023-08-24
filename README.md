@@ -44,7 +44,7 @@ cd mlir-dace-smith && mkdir build && cd build
 ```
 
 ```sh
-cmake -G Ninja .. -DMLIR_DIR=$PWD/../llvm-project-smith/build/lib/cmake/mlir -DLLVM_EXTERNAL_LIT=$PWD/../llvm-project-smith/build/bin/llvm-lit
+cmake -G Ninja .. -DMLIR_DIR=$PWD/../../llvm-project-smith/build/lib/cmake/mlir -DLLVM_EXTERNAL_LIT=$PWD/../../llvm-project-smith/build/bin/llvm-lit
 ```
 
 ```sh
