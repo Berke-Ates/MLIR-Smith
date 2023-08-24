@@ -1,0 +1,6 @@
+[submodule "llvm-project-smith"]
+	path = llvm-project-smith
+	url = https://github.com/Berke-Ates/llvm-project-smith
+[submodule "mlir-dace-smith"]
+	path = mlir-dace-smith
+	url = https://github.com/Berke-Ates/mlir-dace-smith
