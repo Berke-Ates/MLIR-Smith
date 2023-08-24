@@ -44,7 +44,7 @@ cd mlir-dace-smith && mkdir build && cd build
 ```
 
 ```sh
-cmake -G Ninja .. -DMLIR_DIR=$PWD/../../llvm-project-smith/build/lib/cmake/mlir -DLLVM_EXTERNAL_LIT=$PWD/../../llvm-project-smith/build/bin/llvm-lit
+cmake -G Ninja .. -DMLIR_DIR=$PWD/../../llvm-project-smith/build/lib/cmake/mlir -DLLVM_EXTERNAL_LIT=$PWD/../../llvm-project-smith/build/bin/llvm-lit -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_ENABLE_LLD=ON -DLLVM_USE_SANITIZER="Address;Undefined"
 ```
 
 ```sh
