@@ -50,3 +50,12 @@ cmake -G Ninja .. -DMLIR_DIR=$PWD/../llvm-project-smith/build/lib/cmake/mlir -DL
 ```sh
 ninja
 ```
+
+You'll find `mlir-smith` alongside other tools in `llvm-project-smith/build/bin`.
+Similarly for the SDFG version: `mlir-dace-smith/build/bin`.
+
+## Testing
+
+> TODO: Add fuzz testing for DaCe transformations.
+
+> TODO: Add WASM pipeline.
