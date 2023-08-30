@@ -34,9 +34,6 @@ end_seed=10000
 # The timeout in seconds.
 timeout=5
 
-# Get the operation names from the output of mlir-smith --dump
-mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
-
 # Function to process each seed.
 # shellcheck disable=SC2317  # Don't warn about unreachable commands in this function.
 process_seed() {
@@ -45,16 +42,19 @@ process_seed() {
   mlir_opt=$3
   timeout=$4
 
+  # Get the operation names from the output of mlir-smith --dump
+  mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
+
   # Create a temporary file to store the output of mlir-smith.
   temp_file=$(mktemp)
 
-  timeout $timeout ./"$mlir_smith" --seed $seed >"$temp_file" 2>&1
+  timeout "$timeout" ./"$mlir_smith" --seed "$seed" >"$temp_file" 2>&1
   result=$?
-  if [ $result -eq 124 ]; then
+  if [ "$result" -eq 124 ]; then
     echo "Timeout with seed: $seed"
     rm "$temp_file"
     return 1
-  elif [ $result -ne 0 ]; then
+  elif [ "$result" -ne 0 ]; then
     echo "Crash with seed: $seed"
     rm "$temp_file"
     return 1
@@ -62,7 +62,7 @@ process_seed() {
     # If mlir-smith did not crash or timeout, feed the output to mlir-opt.
     ./"$mlir_opt" <"$temp_file" >/dev/null 2>&1
     result=$?
-    if [ $result -ne 0 ]; then
+    if [ "$result" -ne 0 ]; then
       echo "mlir-opt failed with seed: $seed"
       rm "$temp_file"
       return 1
@@ -70,22 +70,41 @@ process_seed() {
   fi
 
   # Check for the occurrence of operation names.
-  # for op in "${ops[@]}"; do
-  #   if grep -q "$op" "$temp_file"; then
-  #     for index in "${!ops[@]}"; do
-  #       if [[ ${ops[$index]} = "$op" ]]; then
-  #         unset 'ops[index]'
-  #       fi
-  #     done
-  #   fi
-  # done
+  for op in "${ops[@]}"; do
+    if grep -q "$op" "$temp_file"; then
+      echo "$op"
+    fi
+  done
 
   rm "$temp_file"
   return 0
 }
 
-# Use GNU Parallel to run multiple threads
-seq $start_seed $end_seed | parallel --halt now,fail=1 --progress process_seed {} "$mlir_smith" "$mlir_opt" $timeout
+export -f process_seed
+
+# Create a temporary file to store the output of mlir-smith.
+temp_file=$(mktemp)
+
+# Use GNU Parallel to run multiple threads.
+seq $start_seed $end_seed | parallel --halt now,fail=1 --progress process_seed {} "$mlir_smith" "$mlir_opt" $timeout >"$temp_file"
+
+# Get the operation names from the output of mlir-smith --dump
+mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
+
+# Check for the occurrence of operation names and remove them from the array
+# if found.
+for op in "${ops[@]}"; do
+  if grep -q "$op" "$temp_file"; then
+    # Remove the operation from the array.
+    for index in "${!ops[@]}"; do
+      if [[ ${ops[$index]} = "$op" ]]; then
+        unset 'ops[index]'
+      fi
+    done
+  fi
+done
+
+rm "$temp_file"
 
 # Check if the array is empty.
 if [ ${#ops[@]} -eq 0 ]; then
