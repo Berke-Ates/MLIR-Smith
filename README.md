@@ -1,6 +1,12 @@
-# MLIR-Smith
+# MLIR-Smith: A Random MLIR Code Generator
 
-> TODO: Description of the project
+Welcome to MLIR-Smith, a powerful tool designed to generate random MLIR
+(Multi-Level Intermediate Representation) code for a registered set of dialects.
+MLIR-Smith aims to simplify the process of testing and validating MLIR compilers,
+optimizers, and code transformations by providing a diverse set of MLIR test
+cases. Inspired by the success of CSmith in generating random C programs,
+MLIR-Smith follows a similar approach to help detect and diagnose errors in the
+MLIR ecosystem.
 
 ## Building
 
