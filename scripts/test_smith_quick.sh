@@ -33,6 +33,6 @@ end_seed=10000
 # The timeout in seconds.
 timeout=5
 
-seq $start_seed $end_seed | parallel --halt now,fail=1 --progress -- "timeout $timeout $mlir_smith --seed {} 2>&1 | $mlir_opt >/dev/null 2>&1 || exit $?"
+seq $start_seed $end_seed | parallel --halt now,fail=1 --progress -- "timeout $timeout $mlir_smith --seed {} 2>&1 | $mlir_opt >/dev/null 2>&1"
 
 exit 0
