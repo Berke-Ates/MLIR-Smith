@@ -88,32 +88,35 @@ temp_file=$(mktemp)
 # Use GNU Parallel to run multiple threads.
 seq $start_seed $end_seed | parallel --halt now,fail=1 --progress process_seed {} "$mlir_smith" "$mlir_opt" $timeout >"$temp_file"
 
-# Get the operation names from the output of mlir-smith --dump
-mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
+result=$?
+if [ "$result" -eq 0 ]; then
+  # Get the operation names from the output of mlir-smith --dump
+  mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
 
-# Check for the occurrence of operation names and remove them from the array
-# if found.
-for op in "${ops[@]}"; do
-  if grep -q "$op" "$temp_file"; then
-    # Remove the operation from the array.
-    for index in "${!ops[@]}"; do
-      if [[ ${ops[$index]} = "$op" ]]; then
-        unset 'ops[index]'
-      fi
+  # Check for the occurrence of operation names and remove them from the array
+  # if found.
+  for op in "${ops[@]}"; do
+    if grep -q "$op" "$temp_file"; then
+      # Remove the operation from the array.
+      for index in "${!ops[@]}"; do
+        if [[ ${ops[$index]} = "$op" ]]; then
+          unset 'ops[index]'
+        fi
+      done
+    fi
+  done
+
+  rm "$temp_file"
+
+  # Check if the array is empty.
+  if [ ${#ops[@]} -eq 0 ]; then
+    echo -e "\nAll operations occurred in the seed range"
+  else
+    echo -e "\nThe following operations did not occur:"
+    for op in "${ops[@]}"; do
+      echo "$op"
     done
   fi
-done
-
-rm "$temp_file"
-
-# Check if the array is empty.
-if [ ${#ops[@]} -eq 0 ]; then
-  echo -e "\nAll operations occurred in the seed range"
-else
-  echo -e "\nThe following operations did not occur:"
-  for op in "${ops[@]}"; do
-    echo "$op"
-  done
 fi
 
 exit 0
