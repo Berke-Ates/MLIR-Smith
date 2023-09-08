@@ -83,23 +83,37 @@ process_seed() {
 
 export -f process_seed
 
-# Create a temporary file to store the output of mlir-smith.
+# Create a temporary files to store the output of mlir-smith.
 temp_file=$(mktemp)
+temp_res=$(mktemp)
 
 # Use GNU Parallel to run multiple threads.
 seq $start_seed $end_seed | parallel --halt now,fail=1 --progress process_seed {} "$mlir_smith" "$mlir_opt" $timeout >"$temp_file"
 
+# Fill up with all operations.
+mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
+for op in "${ops[@]}"; do
+  echo "$op: 0" >>"$temp_file"
+done
+
 # Calculate the number of occurrences per operation.
 total_ops=$(awk -F': ' '{sum += $2} END {print sum}' "$temp_file")
-echo "Occurrences per op (${total_ops}):"
+echo "Occurrences per op (${total_ops}):" >>"$temp_res"
 awk -v total_ops="$total_ops" -F': ' '{arr[$1] += $2} END {for (op in arr) printf "%-20s\t%d (%.2f%%)\n", op, arr[op], arr[op]/total_ops*100}' "$temp_file" |
-  sort
+  sort >>"$temp_res"
 
 # Calculate the number of occurrences per file.
 total_files=$((end_seed - start_seed + 1))
-echo -e "\nOccurrence per file (${total_files}):"
-awk -v total_files="$total_files" -F': ' '{arr[$1]++} END {for (op in arr) printf "%-20s\t%d (%.2f%%)\n", op, arr[op], arr[op]/total_files*100}' "$temp_file" |
-  sort
+echo -e "\nOccurrence per file (${total_files}):" >>"$temp_res"
+awk -v total_files="$total_files" -F': ' '{if (!($1 in arr)) arr[$1] = 0; if ($2 != 0) arr[$1]++;} END {for (op in arr) printf "%-20s\t%d (%.2f%%)\n", op, arr[op], arr[op]/total_files*100}' "$temp_file" |
+  sort >>"$temp_res"
 
+exit_code=0
+if grep -q "0 (0.00%)" "$temp_res"; then
+  exit_code=1
+fi
+
+cat "$temp_res"
+rm "$temp_res"
 rm "$temp_file"
-exit 0
+exit $exit_code
