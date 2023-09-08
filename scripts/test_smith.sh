@@ -28,7 +28,7 @@ if [ ! -x "$mlir_opt" ]; then
 fi
 
 # The range of seeds to test.
-start_seed=0
+start_seed=1
 end_seed=10000
 
 # The timeout in seconds.
@@ -71,8 +71,9 @@ process_seed() {
 
   # Check for the occurrence of operation names.
   for op in "${ops[@]}"; do
-    if grep -q "$op" "$temp_file"; then
-      echo "$op"
+    count=$(grep -c "$op" "$temp_file")
+    if [ "$count" -gt 0 ]; then
+      echo "$op: $count"
     fi
   done
 
@@ -88,35 +89,17 @@ temp_file=$(mktemp)
 # Use GNU Parallel to run multiple threads.
 seq $start_seed $end_seed | parallel --halt now,fail=1 --progress process_seed {} "$mlir_smith" "$mlir_opt" $timeout >"$temp_file"
 
-result=$?
-if [ "$result" -eq 0 ]; then
-  # Get the operation names from the output of mlir-smith --dump
-  mapfile -t ops < <("$mlir_smith" --dump | awk -F' = ' '{print $1}' | grep '\.')
+# Calculate the number of occurrences per operation.
+total_ops=$(awk -F': ' '{sum += $2} END {print sum}' "$temp_file")
+echo "Occurrences per op (${total_ops}):"
+awk -v total_ops="$total_ops" -F': ' '{arr[$1] += $2} END {for (op in arr) printf "%-20s\t%d (%.2f%%)\n", op, arr[op], arr[op]/total_ops*100}' "$temp_file" |
+  sort
 
-  # Check for the occurrence of operation names and remove them from the array
-  # if found.
-  for op in "${ops[@]}"; do
-    if grep -q "$op" "$temp_file"; then
-      # Remove the operation from the array.
-      for index in "${!ops[@]}"; do
-        if [[ ${ops[$index]} = "$op" ]]; then
-          unset 'ops[index]'
-        fi
-      done
-    fi
-  done
+# Calculate the number of occurrences per file.
+total_files=$((end_seed - start_seed + 1))
+echo -e "\nOccurrence per file (${total_files}):"
+awk -v total_files="$total_files" -F': ' '{arr[$1]++} END {for (op in arr) printf "%-20s\t%d (%.2f%%)\n", op, arr[op], arr[op]/total_files*100}' "$temp_file" |
+  sort
 
-  rm "$temp_file"
-
-  # Check if the array is empty.
-  if [ ${#ops[@]} -eq 0 ]; then
-    echo -e "\nAll operations occurred in the seed range"
-  else
-    echo -e "\nThe following operations did not occur:"
-    for op in "${ops[@]}"; do
-      echo "$op"
-    done
-  fi
-fi
-
+rm "$temp_file"
 exit 0
