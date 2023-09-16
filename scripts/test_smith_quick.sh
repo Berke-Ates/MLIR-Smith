@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) 2023, Scalable Parallel Computing Lab, ETH Zurich
+
 # This script is a faster version of `test_smith.sh` without operation tracking
 
 # Be safe.

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) 2023, Scalable Parallel Computing Lab, ETH Zurich
+
 # This script runs mlir-smith with multiple seeds and reports any crashes,
 # timeouts or invalid outputs.
 
