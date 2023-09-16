@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) 2023, Scalable Parallel Computing Lab, ETH Zurich
+
 # This script runs mlir-smith searches for a seed generating a specific output.
 
 # Be safe.
@@ -25,22 +27,31 @@ fi
 
 # The range of seeds to test.
 start_seed=0
-end_seed=1000
+end_seed=10000
 
 # The timeout in seconds.
 timeout=5
 
-for ((seed = start_seed; seed <= end_seed; seed++)); do
-  echo -ne "Running mlir-smith with seed: $seed\r"
+# Function to process each seed.
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function.
+process_seed() {
+  seed=$1
+  mlir_smith=$2
+  timeout=$3
+  word=$4
 
-  output=$(timeout $timeout ./"$mlir_smith" --seed $seed 2>&1)
+  output=$(timeout "$timeout" ./"$mlir_smith" --seed "$seed" 2>&1)
   grep_result=$(echo "$output" | grep -c "$word")
 
   if [ "$grep_result" -gt 0 ]; then
     echo -e "\nFound output string '$word' with seed: $seed"
-    exit 0
+    return 0
   fi
-done
 
-echo -e "\nOutput string '$word' not found in the seed range"
-exit 1
+  return 1
+}
+
+export -f process_seed
+
+# Use GNU Parallel to run multiple threads.
+seq $start_seed $end_seed | parallel --halt now,success=1 --progress process_seed {} "$mlir_smith" $timeout "$word"
