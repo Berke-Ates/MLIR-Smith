@@ -11,15 +11,17 @@ import subprocess
 import dace
 import json
 
-if len(sys.argv) != 3:
+if len(sys.argv) != 4:
     print("SDFG Translation Tool")
     print("Arguments:")
     print("  Input MLIR: The MLIR in the SDFG dialect to translate (- for stdin)")
     print("  SDFG-Translate: The sdfg-translate tool")
+    print("  Output SDFG: The file to write the SDFG to")
     exit(1)
 
 input_file = sys.argv[1]
 sdfg_translate = sys.argv[2]
+output_file = sys.argv[3]
 
 # Check if sdfg-translate exists and is executable
 if not os.path.exists(sdfg_translate):
@@ -44,7 +46,7 @@ os.environ["ASAN_OPTIONS"] = "detect_leaks=0:halt_on_error=0"
 try:
     result = subprocess.run([sdfg_translate, '--mlir-to-sdfg'], input=input_data, text=True,capture_output=True, check=True)
     sdfg = dace.SDFG.from_json(json.loads(result.stdout))
-    print(sdfg.to_json())
+    sdfg.save(output_file)
 except subprocess.CalledProcessError as e:
     print(f"Error executing '{sdfg_translate}': {e}")
     print(f"Error output:\n{e.stderr}")
