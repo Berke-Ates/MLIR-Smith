@@ -16,7 +16,7 @@ copy and paste convenience.
 ### Dependencies
 
 ```sh
-sudo apt update && sudo apt install git clang lld cmake ninja-build
+sudo apt update && sudo apt install git clang lld cmake ninja-build ccache
 ```
 
 ### Clone
