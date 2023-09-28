@@ -62,6 +62,16 @@ Similarly for the SDFG version: `mlir-dace-smith/build/bin`.
 
 ## Testing
 
+### DaCe
+
 > TODO: Add fuzz testing for DaCe transformations.
 
+### WASM
+
 > TODO: Add WASM pipeline.
+
+To run the WASM pipeline you need to install the following additional dependencies:
+
+```sh
+sudo apt update && sudo apt install emscripten wabt
+```
