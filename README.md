@@ -54,7 +54,7 @@ cmake -G Ninja .. -DMLIR_DIR=$PWD/../../llvm-project-smith/build/lib/cmake/mlir 
 ```
 
 ```sh
-ninja
+ninja && ninja sdfg-smith
 ```
 
 You'll find `mlir-smith` alongside other tools in `llvm-project-smith/build/bin`.
