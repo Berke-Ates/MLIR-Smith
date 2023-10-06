@@ -62,6 +62,12 @@ Similarly for the SDFG version: `mlir-dace-smith/build/bin`.
 
 ## Testing
 
+To run the testing scripts you need to install the following additional dependencies:
+
+```sh
+sudo apt update && sudo apt install parallel
+```
+
 ### DaCe
 
 > TODO: Add fuzz testing for DaCe transformations.
