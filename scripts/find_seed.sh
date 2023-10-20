@@ -2,7 +2,7 @@
 
 # Copyright (c) 2023, Scalable Parallel Computing Lab, ETH Zurich
 
-# This script runs mlir-smith searches for a seed generating a specific output.
+# This script uses mlir-smith to search for a seed generating a specific output.
 
 # Be safe.
 set -u # Disallow using undefined variables.
