@@ -1,11 +1,13 @@
-# MLIR-Smith: A Random MLIR Code Generator
+# MLIR-Forge: A Random Code Generator Framework in MLIR
 
-Welcome to MLIR-Smith, a powerful tool designed to generate random MLIR
+> TODO: Update the text below.
+
+Welcome to MLIR-Forge, a powerful tool designed to generate random MLIR
 (Multi-Level Intermediate Representation) code for a registered set of dialects.
-MLIR-Smith aims to simplify the process of testing and validating MLIR compilers,
+MLIR-Forge aims to simplify the process of testing and validating MLIR compilers,
 optimizers, and code transformations by providing a diverse set of MLIR test
 cases. Inspired by the success of CSmith in generating random C programs,
-MLIR-Smith follows a similar approach to help detect and diagnose errors in the
+MLIR-Forge follows a similar approach to help detect and diagnose errors in the
 MLIR ecosystem.
 
 ## Building
@@ -68,16 +70,28 @@ To run the testing scripts you need to install the following additional dependen
 sudo apt update && sudo apt install parallel
 ```
 
-### DaCe
+### SDFG-Smith
 
 > TODO: Add fuzz testing for DaCe transformations.
 
-### WASM
-
-> TODO: Add WASM pipeline.
+### WASM-Smith
 
 To run the WASM pipeline you need to install the following additional dependencies:
 
 ```sh
 sudo apt update && sudo apt install emscripten wabt
+```
+
+Then run the pipeline to generate WASM:
+
+```sh
+./llvm-project-smith/build/bin/mlir-smith | ./scripts/mlir_to_wasm.sh ./llvm-project-smith/build/bin/mlir-opt ./llvm-project-smith/build/bin/mlir-translate
+```
+
+### MLIR-Smith
+
+To generate MLIR in the built-in dialects simply run:
+
+```sh
+./llvm-project-smith/build/bin/mlir-smith
 ```
