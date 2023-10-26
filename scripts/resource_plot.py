@@ -19,20 +19,20 @@ def plot(csv_path):
     # Load the CSV file into a DataFrame
     df = pd.read_csv(csv_path)
 
-    # Create Memory Usage vs. Lines of Code plot
+    # Create Memory Usage vs. Code Size plot
     plt.figure(figsize=(10, 5))
-    sns.scatterplot(data=df, x='Lines of Code', y='Memory Usage (KB)')
-    plt.title('Memory Usage vs. Lines of Code')
-    plt.xlabel('Lines of Code')
+    sns.scatterplot(data=df, x='Code Size (B)', y='Memory Usage (KB)')
+    plt.title('Memory Usage vs. Code Size')
+    plt.xlabel('Code Size (B)')
     plt.ylabel('Memory Usage (KB)')
     plt.savefig('memory_vs_loc.pdf')  # Save the plot
     plt.close()  # Close the plot to prevent it from being displayed
 
-    # Create Execution Time vs. Lines of Code plot
+    # Create Execution Time vs. Code Size plot
     plt.figure(figsize=(10, 5))
-    sns.scatterplot(data=df, x='Lines of Code', y='Execution Time (s)')
-    plt.title('Execution Time vs. Lines of Code')
-    plt.xlabel('Lines of Code')
+    sns.scatterplot(data=df, x='Code Size (B)', y='Execution Time (s)')
+    plt.title('Execution Time vs. Code Size')
+    plt.xlabel('Code Size (B)')
     plt.ylabel('Execution Time (s)')
     plt.savefig('time_vs_loc.pdf')  # Save the plot
     plt.close()  # Close the plot to prevent it from being displayed
