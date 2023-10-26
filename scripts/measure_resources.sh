@@ -24,7 +24,7 @@ if [ ! -x "$mlir_smith" ]; then
 fi
 
 # Number of runs.
-num_runs=10
+num_runs=1000
 
 # Create the CSV header.
 echo "Execution Time (s),Memory Usage (KB),Lines of Code"
@@ -48,4 +48,11 @@ for ((run = 1; run <= num_runs; run++)); do
 
   # Append results to the CSV.
   echo "$execution_time,$memory_usage,$loc"
+
+  # Calculate and display progress
+  progress=$(((run * 100) / num_runs))
+  echo -ne "\rProgress: $progress% (Run: $run/$num_runs)" >&2
 done
+
+# Print a newline at the end for clean output
+echo "" >&2
