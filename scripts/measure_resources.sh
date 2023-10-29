@@ -27,7 +27,7 @@ fi
 num_runs=1000
 
 # Create the CSV header.
-echo "Execution Time (s),Memory Usage (KB),Code Size (B)"
+echo "Code Size (B), Execution Time (µs), Memory Usage (KB)"
 
 # Loop to run mlir-smith, measure, and save results in the CSV.
 for ((run = 1; run <= num_runs; run++)); do
@@ -36,18 +36,16 @@ for ((run = 1; run <= num_runs; run++)); do
   temp_file_res=$(mktemp)
 
   # Run mlir-smith, measure execution time and memory usage, and capture the output.
-  /usr/bin/time -f "%e,%M" "$mlir_smith" -c "$config" 1>"$temp_file_loc" 2>"$temp_file_res"
-  IFS=',' read -r execution_time memory_usage <"$temp_file_res"
+  /usr/bin/time -f "%M" "$mlir_smith" -c "$config" --metrics 1>"$temp_file_loc" 2>"$temp_file_res"
+  IFS=',' read -r memory_usage <"$temp_file_res"
+  IFS=', ' read -r loc execution_time <"$temp_file_loc"
 
-  # Count number of bytes in the output.
-  loc=$(wc -c <"$temp_file_loc")
+  # Append results to the CSV.
+  echo "$loc,$execution_time,$memory_usage"
 
   # Clean up
   rm "$temp_file_loc"
   rm "$temp_file_res"
-
-  # Append results to the CSV.
-  echo "$execution_time,$memory_usage,$loc"
 
   # Calculate and display progress
   progress=$(((run * 100) / num_runs))
