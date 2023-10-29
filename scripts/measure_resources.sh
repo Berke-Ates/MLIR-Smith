@@ -24,7 +24,7 @@ if [ ! -x "$mlir_smith" ]; then
 fi
 
 # Number of runs.
-num_runs=1000
+num_runs=100000
 
 # Create the CSV header.
 echo "Code Size (B),Execution Time (µs),Memory Usage (KB)"
