@@ -30,10 +30,10 @@ def plot(csv_path):
 
     # Create Execution Time vs. Code Size plot
     plt.figure(figsize=(10, 5))
-    sns.scatterplot(data=df, x='Code Size (B)', y='Execution Time (s)')
+    sns.scatterplot(data=df, x='Code Size (B)', y='Execution Time (µs)')
     plt.title('Execution Time vs. Code Size')
     plt.xlabel('Code Size (B)')
-    plt.ylabel('Execution Time (s)')
+    plt.ylabel('Execution Time (µs)')
     plt.savefig('time_vs_loc.pdf')  # Save the plot
     plt.close()  # Close the plot to prevent it from being displayed
 

@@ -27,7 +27,7 @@ fi
 num_runs=1000
 
 # Create the CSV header.
-echo "Code Size (B), Execution Time (µs), Memory Usage (KB)"
+echo "Code Size (B),Execution Time (µs),Memory Usage (KB)"
 
 # Loop to run mlir-smith, measure, and save results in the CSV.
 for ((run = 1; run <= num_runs; run++)); do
