@@ -151,12 +151,14 @@ while true; do
   # Check if only one of the binaries hit the timeout
   if { [ $orig_exit_code -eq 124 ] && [ $opt_exit_code -ne 124 ]; } ||
     { [ $orig_exit_code -ne 124 ] && [ $opt_exit_code -eq 124 ]; }; then
+    ((failure_counts[timeout]++))
     log_failure "execution" "$temp_dir/orig.mlir" "One binary timed out while the other did not"
   fi
 
   # Check if exit codes are different and not due to timeout
   if [ $orig_exit_code -ne $opt_exit_code ] &&
     [ $orig_exit_code -ne 124 ] && [ $opt_exit_code -ne 124 ]; then
+    ((failure_counts[diff]++))
     log_failure "execution" "$temp_dir/orig.mlir" "Different exit codes without timeout: $orig_exit_code vs $opt_exit_code"
   fi
   # Cleanup temporaries.
