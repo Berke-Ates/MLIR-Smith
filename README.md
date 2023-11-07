@@ -90,8 +90,14 @@ Then run the pipeline to generate WASM:
 
 ### MLIR-Smith
 
-To generate MLIR in the built-in dialects simply run:
+To run the MLIR differential testing pipeline you need to install the following additional dependencies:
 
 ```sh
-./llvm-project-smith/build/bin/mlir-smith
+sudo apt update && sudo apt install clang
+```
+
+Then run the pipeline to differentially test MLIR optimization passes:
+
+```sh
+./scripts/mlir-smith_difftest.sh ./llvm-project-smith/build/bin/mlir-smith ./llvm-project-smith/build/bin/mlir-opt ./llvm-project-smith/build/bin/mlir-translate ./llvm-project-smith/build/bin/llc
 ```
