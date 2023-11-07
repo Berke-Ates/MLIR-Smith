@@ -52,16 +52,17 @@ log_failure() {
   cat "$file" >>"$result_path/$step/$programs_tested.mlir"
 }
 
-# Inform the user that the script can be stopped with CTRL+C
-echo "The script is running and will continue to do so until you stop it with CTRL+C."
-
 # Infinite loop
 while true; do
   # Sleep for a brief moment to avoid overwhelming the system
   sleep 1
-
+  # Increase counter
+  ((programs_tested++))
+  # Move the cursor to the top of the screen
+  echo -ne "\033[2J\033[H"
+  # Inform the user that the script can be stopped with CTRL+C
+  echo "The script is running and will continue to do so until you stop it with CTRL+C."
   # Report the number of programs tested so far
-  echo -ne "\033[2J\033[H" # Move the cursor to the top of the screen
   echo "Programs tested so far: $programs_tested"
 
   # Report failures
@@ -82,7 +83,7 @@ while true; do
   fi
 
   # Optimize
-  if ! $mlir_opt "$temp_dir/orig.mlir" >"$temp_dir/opt.mlir" 2>/dev/null; then
+  if ! $mlir_opt -cse --canonicalize --symbol-dce --loop-invariant-code-motion --inline "$temp_dir/orig.mlir" >"$temp_dir/opt.mlir" 2>/dev/null; then
     ((failure_counts[optimization]++))
     log_failure "optimization" "$temp_dir/orig.mlir" "mlir_opt failed"
     rm -r "$temp_dir"
