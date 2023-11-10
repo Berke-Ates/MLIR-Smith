@@ -55,6 +55,10 @@ cd mlir-dace-smith && mkdir build && cd build
 cmake -G Ninja .. -DMLIR_DIR=$PWD/../../llvm-project-smith/build/lib/cmake/mlir -DLLVM_EXTERNAL_LIT=$PWD/../../llvm-project-smith/build/bin/llvm-lit -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_ENABLE_LLD=ON -DLLVM_USE_SANITIZER="Address;Undefined"
 ```
 
+> NOTE: The SDFG Translate Tool (`sdfg-translate`) currently has memory leaks.
+> To use it, either build without ASAN: `-DLLVM_USE_SANITIZER="Address;Undefined"`
+> or disable it by setting the environment variable: `ASAN_OPTIONS="detect_leaks=0:halt_on_error=0"`
+
 ```sh
 ninja && ninja sdfg-smith
 ```
