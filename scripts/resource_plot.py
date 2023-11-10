@@ -51,20 +51,30 @@ def plot(csv_path):
 
     # Create Memory Usage vs. Code Size plot
     plt.figure(figsize=(10, 5))
-    sns.lineplot(data=df, x="Code Size Bin (KB)", y="Memory Usage (MB)")
-    plt.title("Memory Usage vs. Code Size")
-    plt.xlabel("Code Size (KB)")
-    plt.ylabel("Memory Usage (MB)")
+    sns.lineplot(
+        data=df, x="Code Size Bin (KB)", y="Memory Usage (MB)", color="#3c407c"
+    )
+    # plt.title("Memory Usage vs. Code Size", fontsize=22)
+    plt.xlabel("Code Size (KB)", fontsize=20)
+    plt.ylabel("Memory Usage (MB)", fontsize=20)
+    plt.tick_params(labelsize=18)
+    plt.xlim(left=0)
+    plt.ylim(bottom=0)
     plt.tight_layout()
     plt.savefig("memory_vs_loc.pdf")  # Save the plot
     plt.close()  # Close the plot to prevent it from being displayed
 
     # Create Execution Time vs. Code Size plot
     plt.figure(figsize=(10, 5))
-    sns.lineplot(data=df, x="Code Size Bin (KB)", y="Execution Time (ms)")
-    plt.title("Execution Time vs. Code Size")
-    plt.xlabel("Code Size (KB)")
-    plt.ylabel("Execution Time (ms)")
+    sns.lineplot(
+        data=df, x="Code Size Bin (KB)", y="Execution Time (ms)", color="#3c407c"
+    )
+    # plt.title("Execution Time vs. Code Size", fontsize=22)
+    plt.xlabel("Code Size (KB)", fontsize=20)
+    plt.ylabel("Execution Time (ms)", fontsize=20)
+    plt.tick_params(labelsize=18)
+    plt.xlim(left=0)
+    plt.ylim(bottom=0)
     plt.tight_layout()
     plt.savefig("time_vs_loc.pdf")  # Save the plot
     plt.close()  # Close the plot to prevent it from being displayed
