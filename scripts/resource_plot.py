@@ -54,10 +54,10 @@ def plot(csv_path):
     sns.lineplot(
         data=df, x="Code Size Bin (KB)", y="Memory Usage (MB)", color="#3c407c"
     )
-    plt.title("Memory Usage vs. Code Size", fontsize=20)
-    plt.xlabel("Code Size (KB)", fontsize=18)
-    plt.ylabel("Memory Usage (MB)", fontsize=18)
-    plt.tick_params(labelsize=14)
+    # plt.title("Memory Usage vs. Code Size", fontsize=22)
+    plt.xlabel("Code Size (KB)", fontsize=20)
+    plt.ylabel("Memory Usage (MB)", fontsize=20)
+    plt.tick_params(labelsize=18)
     plt.xlim(left=0)
     plt.ylim(bottom=0)
     plt.tight_layout()
@@ -69,10 +69,10 @@ def plot(csv_path):
     sns.lineplot(
         data=df, x="Code Size Bin (KB)", y="Execution Time (ms)", color="#3c407c"
     )
-    plt.title("Execution Time vs. Code Size", fontsize=20)
-    plt.xlabel("Code Size (KB)", fontsize=18)
-    plt.ylabel("Execution Time (ms)", fontsize=18)
-    plt.tick_params(labelsize=14)
+    # plt.title("Execution Time vs. Code Size", fontsize=22)
+    plt.xlabel("Code Size (KB)", fontsize=20)
+    plt.ylabel("Execution Time (ms)", fontsize=20)
+    plt.tick_params(labelsize=18)
     plt.xlim(left=0)
     plt.ylim(bottom=0)
     plt.tight_layout()
