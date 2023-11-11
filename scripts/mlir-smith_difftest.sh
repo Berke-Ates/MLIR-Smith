@@ -47,7 +47,6 @@ log_failure() {
   local reason=$3
 
   mkdir -p "$result_path/$step"
-  echo "Failure in $step step: $reason" >>"$result_path/failures.log"
   echo "// Reason for failure: $step step - $reason" >"$result_path/$step/$programs_tested.mlir"
   cat "$file" >>"$result_path/$step/$programs_tested.mlir"
 }
