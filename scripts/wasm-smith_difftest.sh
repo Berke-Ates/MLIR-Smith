@@ -106,10 +106,9 @@ while true; do
   fi
 
   # Run binaries with timeout and check exit codes
-  export NODE_OPTIONS="--no-experimental-fetch"
-  timeout --foreground 5s node "$temp_dir/orig.js"
+  timeout --foreground 5s nodejs "$temp_dir/orig.js"
   orig_exit_code=$?
-  timeout --foreground 5s node "$temp_dir/opt.js"
+  timeout --foreground 5s nodejs "$temp_dir/opt.js"
   opt_exit_code=$?
 
   # Check if only one of the binaries hit the timeout
