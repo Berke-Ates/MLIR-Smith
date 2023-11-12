@@ -2,14 +2,14 @@
 
 # Copyright (c) 2023, Scalable Parallel Computing Lab, ETH Zurich
 
-# This script uses MLIR-Smith to differentially test MLIR's optimization passes.
+# This script uses WASM-Smith to differentially test emcc's optimization passes.
 
 # Be safe.
 set -u # Disallow using undefined variables.
 
 # Check if a path to the tools was provided.
-if [ $# -ne 4 ]; then
-  echo "Usage: $0 <path to mlir-smith> <path to mlir-opt> <path to mlir-translate> <path to llc>"
+if [ $# -ne 3 ]; then
+  echo "Usage: $0 <path to mlir-smith> <path to mlir-opt> <path to mlir-translate>"
   exit 1
 fi
 
@@ -17,12 +17,11 @@ fi
 mlir_smith=$1
 mlir_opt=$2
 mlir_translate=$3
-llc=$4
-clang=$(which clang)
+emcc=$(which emcc)
 result_path=./results
 
 # Check if the tools exist and are executable.
-for tool in "$mlir_smith" "$mlir_opt" "$mlir_translate" "$llc" "$clang"; do
+for tool in "$mlir_smith" "$mlir_opt" "$mlir_translate" "$emcc"; do
   if [ ! -x "$tool" ]; then
     echo "Error: Tool does not exist at '$tool' or is not executable."
     exit 1
@@ -32,10 +31,8 @@ done
 # Initialize counters
 declare -A failure_counts
 failure_counts[generation]=0
-failure_counts[optimization]=0
 failure_counts[translation]=0
-failure_counts[llc]=0
-failure_counts[clang]=0
+failure_counts[emmc]=0
 failure_counts[timeout]=0
 failure_counts[diff]=0
 programs_tested=0
@@ -81,14 +78,6 @@ while true; do
     continue
   fi
 
-  # Optimize
-  if ! $mlir_opt -cse --canonicalize --symbol-dce --loop-invariant-code-motion --inline "$temp_dir/orig.mlir" >"$temp_dir/opt.mlir" 2>/dev/null; then
-    ((failure_counts[optimization]++))
-    log_failure "optimization" "$temp_dir/orig.mlir" "mlir_opt failed"
-    rm -r "$temp_dir"
-    continue
-  fi
-
   # Get LLVM IR through LLVM Dialect
   if ! $mlir_opt --convert-scf-to-cf --convert-func-to-llvm --convert-cf-to-llvm \
     --convert-math-to-llvm --convert-arith-to-llvm --lower-host-to-llvm \
@@ -101,42 +90,17 @@ while true; do
     continue
   fi
 
-  if ! $mlir_opt --convert-scf-to-cf --convert-func-to-llvm --convert-cf-to-llvm \
-    --convert-math-to-llvm --convert-arith-to-llvm --lower-host-to-llvm \
-    --reconcile-unrealized-casts \
-    "$temp_dir/opt.mlir" |
-    $mlir_translate --mlir-to-llvmir >"$temp_dir/opt.ll" 2>/dev/null; then
-    ((failure_counts[translation]++))
-    log_failure "lowering" "$temp_dir/orig.mlir" "mlir-opt/mlir-translate failed on opt.ll"
-    rm -r "$temp_dir"
-    continue
-  fi
-
   # Compile
-  if ! $llc -O0 --relocation-model=pic "$temp_dir/orig.ll" -o "$temp_dir/orig.s" &>/dev/null; then
-    ((failure_counts[llc]++))
-    log_failure "llc" "$temp_dir/orig.mlir" "llc failed on orig.ll"
+  if ! $emcc -O0 --relocation-model=pic "$temp_dir/orig.ll" -o "$temp_dir/orig.out" &>/dev/null; then
+    ((failure_counts[emcc]++))
+    log_failure "emcc" "$temp_dir/orig.mlir" "emcc failed -O0 on orig.ll"
     rm -r "$temp_dir"
     continue
   fi
 
-  if ! $clang -O0 -fPIC -march=native "$temp_dir/orig.s" -o "$temp_dir/orig.out" &>/dev/null; then
-    ((failure_counts[clang]++))
-    log_failure "clang" "$temp_dir/orig.mlir" "clang failed on orig.s"
-    rm -r "$temp_dir"
-    continue
-  fi
-
-  if ! $llc -O0 --relocation-model=pic "$temp_dir/opt.ll" -o "$temp_dir/opt.s" &>/dev/null; then
-    ((failure_counts[llc]++))
-    log_failure "llc" "$temp_dir/orig.mlir" "llc failed on opt.ll"
-    rm -r "$temp_dir"
-    continue
-  fi
-
-  if ! $clang -O0 -fPIC -march=native "$temp_dir/opt.s" -o "$temp_dir/opt.out" &>/dev/null; then
-    ((failure_counts[clang]++))
-    log_failure "clang" "$temp_dir/orig.mlir" "clang failed on opt.s"
+  if ! $emcc -O3 --relocation-model=pic "$temp_dir/orig.ll" -o "$temp_dir/opt.out" &>/dev/null; then
+    ((failure_counts[emcc]++))
+    log_failure "emcc" "$temp_dir/orig.mlir" "emcc failed -O3 on orig.ll"
     rm -r "$temp_dir"
     continue
   fi
