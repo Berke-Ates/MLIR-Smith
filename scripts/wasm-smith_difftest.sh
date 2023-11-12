@@ -91,14 +91,14 @@ while true; do
   fi
 
   # Compile
-  if ! $emcc -O0 --relocation-model=pic "$temp_dir/orig.ll" -o "$temp_dir/orig.out" &>/dev/null; then
+  if ! $emcc -O0 "$temp_dir/orig.ll" -o "$temp_dir/orig.js" &>/dev/null; then
     ((failure_counts[emcc]++))
     log_failure "emcc" "$temp_dir/orig.mlir" "emcc failed -O0 on orig.ll"
     rm -r "$temp_dir"
     continue
   fi
 
-  if ! $emcc -O3 --relocation-model=pic "$temp_dir/orig.ll" -o "$temp_dir/opt.out" &>/dev/null; then
+  if ! $emcc -O3 "$temp_dir/orig.ll" -o "$temp_dir/opt.js" &>/dev/null; then
     ((failure_counts[emcc]++))
     log_failure "emcc" "$temp_dir/orig.mlir" "emcc failed -O3 on orig.ll"
     rm -r "$temp_dir"
@@ -106,9 +106,10 @@ while true; do
   fi
 
   # Run binaries with timeout and check exit codes
-  timeout --foreground 5s "$temp_dir/orig.out"
+  export NODE_OPTIONS="--no-experimental-fetch"
+  timeout --foreground 5s node "$temp_dir/orig.js"
   orig_exit_code=$?
-  timeout --foreground 5s "$temp_dir/opt.out"
+  timeout --foreground 5s node "$temp_dir/opt.js"
   opt_exit_code=$?
 
   # Check if only one of the binaries hit the timeout
