@@ -32,7 +32,7 @@ done
 declare -A failure_counts
 failure_counts[generation]=0
 failure_counts[translation]=0
-failure_counts[emmc]=0
+failure_counts[emcc]=0
 failure_counts[timeout]=0
 failure_counts[diff]=0
 programs_tested=0
