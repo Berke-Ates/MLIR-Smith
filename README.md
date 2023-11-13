@@ -92,6 +92,9 @@ Then run the pipeline to generate WASM:
 ./llvm-project-smith/build/bin/mlir-smith | ./scripts/mlir_to_wasm.sh ./llvm-project-smith/build/bin/mlir-opt ./llvm-project-smith/build/bin/mlir-translate
 ```
 
+If issues occur due to mismatching LLVM versions, update the LLVM build and
+set the environment variable as outlined [here](https://emscripten.org/docs/building_from_source/index.html).
+
 ### MLIR-Smith
 
 To run the MLIR differential testing pipeline you need to install the following additional dependencies:
