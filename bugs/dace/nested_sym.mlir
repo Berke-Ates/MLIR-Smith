@@ -1,4 +1,4 @@
-// Auto-optimze makes this sdfg invalid
+// Auto-optimze makes this sdfg invalid "missing symbols on nested SDFG"
 
 module {
   sdfg.sdfg {entry = @state_0} () -> (){
