@@ -1,3 +1,5 @@
+// Auto-optimze makes this sdfg invalid
+
 module {
   sdfg.sdfg {entry = @state_0} () -> (){
     sdfg.state @state_0{
