@@ -52,7 +52,11 @@ def plot(csv_path):
     # Create Memory Usage vs. Code Size plot
     plt.figure(figsize=(10, 5))
     sns.lineplot(
-        data=df, x="Code Size Bin (KB)", y="Memory Usage (MB)", color="#3c407c"
+        data=df,
+        x="Code Size Bin (KB)",
+        y="Memory Usage (MB)",
+        color="#565d9b",
+        linewidth=2,
     )
     # plt.title("Memory Usage vs. Code Size", fontsize=22)
     plt.xlabel("Code Size (KB)", fontsize=20)
@@ -67,7 +71,11 @@ def plot(csv_path):
     # Create Execution Time vs. Code Size plot
     plt.figure(figsize=(10, 5))
     sns.lineplot(
-        data=df, x="Code Size Bin (KB)", y="Execution Time (ms)", color="#3c407c"
+        data=df,
+        x="Code Size Bin (KB)",
+        y="Execution Time (ms)",
+        color="#565d9b",
+        linewidth=2,
     )
     # plt.title("Execution Time vs. Code Size", fontsize=22)
     plt.xlabel("Code Size (KB)", fontsize=20)
